@@ -1,0 +1,48 @@
+services:
+  # PostgreSQL with PGVector for vector storage and chat memory
+  pgvector:
+    image: "pgvector/pgvector:pg16"
+    container_name: qaagent-pgvector
+    environment:
+      - "POSTGRES_DB=qaagent"
+      - "POSTGRES_PASSWORD=password"
+      - "POSTGRES_USER=user"
+    labels:
+      - "org.springframework.boot.service-connection=postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d qaagent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Open WebUI - Chat interface for testing (optional)
+  # Access at http://localhost:3000
+  open-webui:
+    image: "ghcr.io/open-webui/open-webui:main"
+    container_name: qaagent-openwebui
+    profiles:
+      - ui
+    environment:
+      # Configure OpenAI-compatible connection to our Spring AI backend
+      - OPENAI_API_BASE_URLS=http://host.docker.internal:8080/v1
+      - OPENAI_API_KEYS=sk-unused
+      - WEBUI_AUTH=false
+      # Disable Ollama since we're only using OpenAI-compatible API
+      - ENABLE_OLLAMA_API=false
+    ports:
+      - "3000:8080"
+    volumes:
+      - openwebui_data:/app/backend/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      pgvector:
+        condition: service_healthy
+
+volumes:
+  pgvector_data:
+  openwebui_data:

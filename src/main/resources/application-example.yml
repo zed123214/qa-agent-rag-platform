@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: qa-agent-rag-platform
+
+  docker:
+    compose:
+      lifecycle-management: START_ONLY
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/qaagent
+    username: user
+    password: password
+
+  ai:
+    openai:
+      api-key: ${AI_API_KEY:demo-key}
+      base-url: ${AI_BASE_URL:https://api.openai.com}
+      chat:
+        completions-path: /v1/chat/completions
+        options:
+          model: gpt-4o-mini
+          temperature: 0.7
+
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: ALWAYS
+      client:
+        observations:
+          include-input: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    "[org.springframework.ai]": INFO
+    "[com.qaagent.rag]": DEBUG
+
+rag:
+  top-k: 5
+  similarity-threshold: 0.5
+  chunk-size: 800
+  chunk-overlap: 100
+
+agent:
+  demo-mode: true
+  tools:
+    whitelist:
+      - knowledge_search
+      - defect_recall
+      - log_search
+      - test_case_generate
+      - ai_critic_evaluate
+      - test_case_export

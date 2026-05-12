@@ -1,0 +1,49 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+logs/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Build directories
+target/
+build/
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Uploads and real data (security)
+uploads/
+real_data/
+
+# Application config (contains secrets)
+application.yml
+application-*.yml
+!application-example.yml
+.env
+
+# Node
+node_modules/
+dist/
+
+# Python (in case of mixed repo)
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Keep sample data and docs
+!sample_data/
+!docs/
+!screenshots/.gitkeep
+!application-example.yml

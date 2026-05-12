@@ -1,0 +1,53 @@
+{
+  "testCases": [
+    {
+      "caseId": "TC-LOGIN-001",
+      "title": "[Normal] Valid login with correct credentials",
+      "precondition": "User account exists and is active",
+      "steps": [
+        "Send POST /api/auth/login with valid username and password",
+        "Verify response status code is 200",
+        "Verify response contains JWT token in data.token"
+      ],
+      "expected": "HTTP 200, token returned, expiresIn = 86400",
+      "priority": "P0",
+      "tags": ["smoke", "login", "normal"]
+    },
+    {
+      "caseId": "TC-LOGIN-002",
+      "title": "[Exception] Login with incorrect password",
+      "precondition": "User account exists",
+      "steps": [
+        "Send POST /api/auth/login with valid username and wrong password",
+        "Verify response status code is 401"
+      ],
+      "expected": "HTTP 401, errorCode = AUTH_001, msg = 'Invalid credentials'",
+      "priority": "P1",
+      "tags": ["login", "exception", "security"]
+    },
+    {
+      "caseId": "TC-LOGIN-003",
+      "title": "[Boundary] Password exactly 8 characters (minimum)",
+      "precondition": "User account with 8-char password exists",
+      "steps": [
+        "Send POST /api/auth/login with password 'Abcd1234'",
+        "Verify response"
+      ],
+      "expected": "HTTP 200 if password correct, login successful",
+      "priority": "P2",
+      "tags": ["login", "boundary"]
+    },
+    {
+      "caseId": "TC-LOGIN-004",
+      "title": "[Permission] Login with disabled account",
+      "precondition": "Admin has disabled the test user account",
+      "steps": [
+        "Send POST /api/auth/login with disabled account credentials",
+        "Verify response status code is 401"
+      ],
+      "expected": "HTTP 401, errorCode = AUTH_002, msg = 'Account disabled'",
+      "priority": "P1",
+      "tags": ["login", "permission", "security"]
+    }
+  ]
+}
